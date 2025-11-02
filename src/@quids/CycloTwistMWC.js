@@ -93,9 +93,9 @@ export class CycloTwistMWC {
         const output = []
 
         for (let offset = 0; offset < conf.r_lag; offset++) {
-            const nidx = conf.r_lag * (offset + data.vidx) % conf.r_lag
+            const nidx = data.vidx + conf.r_lag * (offset + data.cidx) 
         
-            output.push (data.numbers [nidx])
+            output.push (data.numbers [nidx % conf.r_lag])
         }
         
         return output

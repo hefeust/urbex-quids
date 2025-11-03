@@ -3,8 +3,8 @@ export {
     QUID
 } from  './QUID.js'
 
-import QUIDCollisionsTest from './tests/QUIDCollisionsTest.svelte'
+import Sequences from './tests/Sequences.svelte'
 
 export const components  = {
-    QUIDCollisionsTest
+    Sequences
 }

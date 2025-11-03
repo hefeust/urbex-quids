@@ -1,6 +1,8 @@
 {
 	"name": "urbex-quids",
 	"version": "0.0.1",
+	"author": "hefeust",
+	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run prepack",

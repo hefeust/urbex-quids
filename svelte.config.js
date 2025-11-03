@@ -9,7 +9,8 @@ const config = {
 		adapter: adapter(),
 		
 		alias: {
-		    '@quids': 'src/@quids'
+		    '@quids': 'src/@quids',
+		    '@test-compos': 'src/@test-compos'
 		}
 	}
 };

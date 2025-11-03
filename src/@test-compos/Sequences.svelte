@@ -1,7 +1,7 @@
 
 <script lang="ts">
     import { onMount, onDestroy } from "svelte"
-    import { QUID } from '../QUID.js'
+    import { QUID } from '@quids/QUID.js'
     
     const qgen = new QUID ('#test!')
 

@@ -1,6 +1,6 @@
 
 <script lang="ts">
-    import RawCollisions from '@quids/tests/RawCollisions.svelte'
+    import { RawCollisions } from '@test-compos'
 </script>
 
 <RawCollisions />

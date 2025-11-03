@@ -7,16 +7,19 @@
 
     let ival
     let items = []
+    let loop_idx = 0
     
     onMount (() => {
         ival = setInterval (() => {
             items = []
             
-            for (let i = 0; i < 1000; i++) {
+            for (let i = 0; i < 100; i++) {
                 const quid = qgen.next (q => true)
                 
                 items.push (quid.toString ())
             }
+            
+            loop_idx++
         }, 1000)
     })
     
@@ -25,16 +28,59 @@
     })
 </script>
 
-<h1> QUID Collisions Test </h1>
+{#snippet draw_quid (quid) }
+    <div class="quid-viewer">
+        <div class="quid-gradient">
+            <div class="quid-circle" style={ `background-color: #${ quid };` }>
+                &nbsp;
+            </div>
+        </div>
+        <div class="quid-refs"> { quid } </div>
+    </div>
+{/snippet}
 
-<pre>
-    { items.join (', ')}
-</pre>
+<h1> QUIDs sequence test </h1>
+
+<p> trail number { loop_idx } </p>
+
+<div class="items">
+    {#each items as quid}
+        {@render draw_quid (quid) }
+    {/each}
+</div>
 
 <style>
-    pre {
-        width: 100vw;
-        white-space: pre-wrap;
-        word-wrap; break-word;
+    div.items {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+    }
+    
+    div.quid-viewer {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 3fr 1fr;     
+/*        background-color: darkslateblue; */
+        padding: 0.25em;
+        margin: 0.25em;
+        border-radius: 5%;
+        border: 1px solid darkorange;
+    }
+    
+    div.quid-gradient {
+        padding: 0.25vh;
+        background-image: linearGradient(black, grey, white);
+            
+    }
+    
+    div.quid-circle {
+        width: 5vh; 
+        height: 5vh;
+        border-radius: 50%;
+    }
+    
+    div.quid-refs {
+        font-weight: bold;
+        font-family: sans;
+        font-size: 85%  ;
     }
 </style>

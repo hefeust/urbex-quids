@@ -10,8 +10,8 @@ const config = {
 		adapter: adapter(),
 		
 		alias: {
-		    '@quids': path.resolve ('./src/@quids'),
-		    '@test-compos': path.resolve ('./src/@test-compos')
+		    '@quids': path.resolve ('./src/quids'),
+		    '@test-compos': path.resolve ('./src/test-compos')
 		}
 	}
 };

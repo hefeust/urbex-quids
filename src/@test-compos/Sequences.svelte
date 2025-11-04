@@ -57,9 +57,11 @@
     
     div.quid-viewer {
         display: grid;
+        align-items: center;
+        justify-content: center;        
         grid-template-columns: 1fr;
         grid-template-rows: 3fr 1fr;     
-/*        background-color: darkslateblue; */
+        background-color: darkslateblue;
         padding: 0.25em;
         margin: 0.25em;
         border-radius: 5%;
@@ -67,14 +69,17 @@
     }
     
     div.quid-gradient {
-        padding: 0.25vh;
-        background-image: linearGradient(black, grey, white);
-            
+        display: flex;
+        width: 25%;
+        justify-content: center;
+        padding: 0.5vh;
+        background: linear-gradient(black, black, grey, white, white);
     }
     
     div.quid-circle {
         width: 5vh; 
         height: 5vh;
+        border: 3px solid grey;
         border-radius: 50%;
     }
     

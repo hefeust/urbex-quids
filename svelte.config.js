@@ -1,4 +1,5 @@
 import adapter from '@sveltejs/adapter-auto';
+import path from 'path'
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -9,8 +10,8 @@ const config = {
 		adapter: adapter(),
 		
 		alias: {
-		    '@quids': 'src/@quids',
-		    '@test-compos': 'src/@test-compos'
+		    '@quids': path.resolve ('./src/@quids'),
+		    '@test-compos': path.resolve ('./src/@test-compos')
 		}
 	}
 };

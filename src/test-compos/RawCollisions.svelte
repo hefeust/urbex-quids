@@ -60,6 +60,6 @@
     pre {
         width: 100vw;
         white-space: pre-wrap;
-        word-wrap; break-word;
+        word-wrap: break-word;
     }
 </style>

@@ -1,4 +1,5 @@
 
-export * as quids from '@quids'
+export * as quids from '../quids'
+
 
 

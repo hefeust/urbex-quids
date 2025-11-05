@@ -1,0 +1,24 @@
+// vite.config.js
+import { defineConfig } from 'vite';
+//imported { svelte } from '@sveltejs/vite-plugin-svelte';
+import { sveltekit } from '@sveltejs/kit/vite';
+
+export default defineConfig({
+  plugins: [sveltekit()],
+  build: {
+    lib: {
+      entry: 'src/lib/index.js', // or .ts if you're using TypeScript
+      name: 'urbex-quids',
+      fileName: (format) => `my-library.${format}.js`,
+      formats: ['es', 'umd']
+    },
+    rollupOptions: {
+      external: ['svelte'],
+      output: {
+        globals: {
+          svelte: 'Svelte'
+        }
+      }
+    }
+  }
+});

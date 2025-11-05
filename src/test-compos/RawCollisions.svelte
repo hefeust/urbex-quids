@@ -1,7 +1,7 @@
 
 <script lang="ts">
     import { onMount, onDestroy } from "svelte"
-    import { QUID } from '@quids/QUID.js'
+    import { QUID } from '$lib'
     
     const MAX = 128 * 128
     const qgen = new QUID ('#test!')

@@ -1,8 +1,9 @@
 
 <script lang="ts">
     import { onMount, onDestroy } from "svelte"
-    import { QUID } from '@quids/QUID.js'
+    import { QUID } from '$lib'
     
+//    const qgen = new QUID (Date.now ().toString (16))
     const qgen = new QUID ('#test!')
 
     let ival
@@ -69,14 +70,14 @@
     }
     
     div.quid-gradient {
-        display: flex;
-        width: 25%;
-        justify-content: center;
+        width: 50%;
+        justify-self: center;
         padding: 0.5vh;
         background: linear-gradient(black, black, grey, white, white);
     }
     
     div.quid-circle {
+        justify-self: center;    
         width: 5vh; 
         height: 5vh;
         border: 3px solid grey;

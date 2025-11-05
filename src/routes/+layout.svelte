@@ -1,5 +1,7 @@
 
 <script lang="ts">
+    import '../app.css'
+
     const LINKS = {
         '/': 'Table of contents',
         '/01-raw-collisions': '/01-raw-collisions',
@@ -22,11 +24,7 @@
 {@render children () }
 
 <style>
-    :global(body) {
-        background-color: midnightblue;
-        color: limegreen;
-        background-image: linearGradient(black, transparent, slateblue);
-    }
+
     
     a { 
         color: orange;

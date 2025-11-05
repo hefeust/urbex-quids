@@ -7,20 +7,24 @@ import path from 'path'
 
 export default defineConfig({
 	plugins: [sveltekit()],
+	resolve: {
+	    alias: {
+	        '$lib': path.resolve ('./src/lib')
+	    }
+	},
 	
 	build: {
-//	    lib: {
-    	    entry: 'src/lib/index.js',
+	    entry: 'src/lib/index.js',
 
             name: 'urbex-quids',
             formats: ['es'],
             fileName: (format) => `my-svelte-lib.${format}.js`
-//        }        
+        
    },
     	
         rollupOptions: {
             output: {
-//                inlineDynamicImports: true,
+                inlineDynamicImports: true,
                 globals: {
                   svelte: 'Svelte'
                 }

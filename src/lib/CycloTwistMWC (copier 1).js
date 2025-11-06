@@ -14,19 +14,15 @@ export class CycloTwistMWC {
         })
         
         let size = 2 * r_lag + 1
-        
-        const numbers = nw Array (size).fill (127)
-        
-//        let numbers = new Array (size).fill (131)
-//        let carries = new Array (size).fill (0)
+        let numbers = new Array (size).fill (131)
+        let carries = new Array (size).fill (0)
         let vidx = r_lag
         let cidx = 0
         let wave = 0
         
         Object.defineProperty (this, SAFE_DATA, {
             value: {
-//                numbers, carries, size, vidx, cidx, wave
-                numbers, size, vidx, cidx
+                numbers, carries, size, vidx, cidx, wave
             }
         })
     }
@@ -46,19 +42,14 @@ export class CycloTwistMWC {
         console.log ('' + this)
     }
     
-    
-    
     set coeffs ({ value, carry }) {
         const data = this [SAFE_DATA]  
 
 //          console.log ('set coeffs: ' + value + ' ' + carry)
 
-//        data.numbers [data.vidx] = value
-//        data.carries [data.cidx] = carry            
-
-
-        data.numbers [data.vidx] = value        
-        data.numbers [data.vidx] = carry
+        data.numbers [data.vidx] = value
+        data.carries [data.cidx] = carry            
+        
     }
     
     get coeffs () {

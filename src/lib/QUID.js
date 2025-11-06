@@ -20,9 +20,10 @@ export class QUID {
     initialize (salt_phrase) {
         const mwc = this [SAFE_MWC] 
         
-        console.log ({  mwc })
         
         mwc.initialize (salt_phrase)
+        
+        console.log ('QUID.initialize', {  mwc })
     }
     
     reset () {}
@@ -46,6 +47,8 @@ export class QUID {
         const mwc = this [SAFE_MWC] 
         const values = mwc.next ()
         const hexits = this._toHexaString (values)        
+
+        mwc.cycle ()
 
         return {
             values, 

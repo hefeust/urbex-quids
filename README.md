@@ -17,8 +17,14 @@ Please visit the article [Playinng with QUIDs](https://dev.to/hefeust/playing-wi
 ## Usage
 
     import { QUID } from 'urbex-quids'
-    
+
+    // either with a chaeacter salting phrase:    
     const keysgen = new QUID ('#test!')
+    
+    // ... or with custom time-based one  (less predictible)
+    const keysgen = new QUID (Date.now ().toString (16))
+
+    // user storage
     const m = new Map ()
     
     for (let i = 0; i < 10 * 1000; i++) {

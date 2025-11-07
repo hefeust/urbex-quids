@@ -3,8 +3,8 @@
     import { onMount, onDestroy } from "svelte"
     import { QUID } from '$lib'
     
-//    const qgen = new QUID (Date.now ().toString (16))
-    const qgen = new QUID ('#test!')
+    const qgen = new QUID (Date.now ().toString (16))
+//    const qgen = new QUID ('#test!')
 
     let ival
     let items = []
@@ -21,7 +21,7 @@
             }
             
             loop_idx++
-        }, 1000)
+        }, 250)
     })
     
     onDestroy (() => {
@@ -87,6 +87,6 @@
     div.quid-refs {
         font-weight: bold;
         font-family: sans;
-        font-size: 85%  ;
+
     }
 </style>

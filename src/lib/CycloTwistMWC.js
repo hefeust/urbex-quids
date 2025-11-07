@@ -1,140 +1,76 @@
 
-const SAFE_CONF = Symbol.for ('SAFE_CONF')
-const SAFE_DATA = Symbol.for ('SAFE_DATA')
+const SYM_CONF = Symbol ('conf')
+const SYM_DATA = Symbol ('data')
 
 export class CycloTwistMWC {
 
-    constructor ({ a_mul, b_mod, r_lag }) {
-        Object.defineProperty (this, SAFE_CONF, {
-            get: () => {
-                return {
-                    a_mul, b_mod, r_lag
-                }
-            }
-        })
+    constructor ({ a_mul, b_mod, r_lag, size }) {
+        this [SYM_CONF] = {
+            a_mul, b_mod, r_lag, size
+        }
         
-        let size = 2 * r_lag + 1
+        this [SYM_DATA] = {
+            cidx: 0,
+            vidx: r_lag,
+            nums: Array (2 * (2 * size) + r_lag).fill (Math.floor (b_mod / 2))
+        }
         
-        const numbers = nw Array (size).fill (127)
-        
-//        let numbers = new Array (size).fill (131)
-//        let carries = new Array (size).fill (0)
-        let vidx = r_lag
-        let cidx = 0
-        let wave = 0
-        
-        Object.defineProperty (this, SAFE_DATA, {
-            value: {
-//                numbers, carries, size, vidx, cidx, wave
-                numbers, size, vidx, cidx
-            }
-        })
+        this.resalt ('#test!')
     }
     
-    initialize (salt_phrase = '#test-mwc-twister!') {
-        // console.log ({ salt_phrase })
-    
+    resalt (salt_phrase) {
+        const { a_mul, b_mod, r_lag, size } = this [SYM_CONF]
+        const data = this [SYM_DATA]
+
         for (let i = 0; i < salt_phrase.length; i++) {
             const k = salt_phrase.charCodeAt (i)
+
+            data [data.cidx] = k
+            data [data.vidx] = b_mod - k
             
-            console.log (k)
-            
-            this.coeffs = { value: k, carry: 0 }
             this.cycle ()
         }
         
-        console.log ('' + this)
-    }
-    
-    
-    
-    set coeffs ({ value, carry }) {
-        const data = this [SAFE_DATA]  
-
-//          console.log ('set coeffs: ' + value + ' ' + carry)
-
-//        data.numbers [data.vidx] = value
-//        data.carries [data.cidx] = carry            
-
-
-        data.numbers [data.vidx] = value        
-        data.numbers [data.vidx] = carry
-    }
-    
-    get coeffs () {
-        const data = this [SAFE_DATA]  
-
-        return {
-            value: data.numbers [data.vidx],
-            carry: data.carries [data.cidx]
-        }
+        console.log ('' + this)        
     }
     
     next () {
-        const conf = this [SAFE_CONF]
-        const data = this [SAFE_DATA]
-        const { a_mul, b_mod, r_lag } = conf
-        const { value, carry } = this.coeffs
+        const { a_mul, b_mod, r_lag, size } = this [SYM_CONF]
+        const data = this [SYM_DATA]
+        const value = data.nums [data.vidx]
+        const carry = data.nums [data.cidx]
+        const output = new Array (size)
+        
+        const lin = (a_mul * value + carry)
+        const mod = lin % b_mod
+        const sub = lin - mod
+        const div = sub / b_mod
+        
+        data.nums [data.vidx] = mod
+        data.nums [data.cidx] = div
 
-        const s = a_mul * value + carry
-        const v = s % b_mod
-        let d = s - v
-        let q = d / conf.b_mod
-        let idx = 0
-        
-        do {
-            if (q < conf.b_mod) {
-                break
-            } else {
-                d -= q * conf.b_mod
-                q /= conf.b_mod
-            }
-        } while (idx++ < conf.r_lag)
-        
-      
-        this.coeffs = {
-            value: v, carry: Math.floor(q)
-        }       
-     
-        this.cycle ()   
-        this.twist ()
-        
-        const output = []
-
-        for (let offset = 0; offset < conf.r_lag; offset++) {
-            const nidx = data.vidx + conf.r_lag * (offset + data.cidx) 
-        
-            output.push (data.numbers [nidx % conf.r_lag])
+        for (let off = 0; off < size; off++) {
+            output [off] = data.nums [off]
         }
         
         return output
     }
-    
+       
     cycle () {
-        const conf = this [SAFE_CONF]
-        const data = this [SAFE_DATA]
+        const { a_mul, b_mod, r_lag, size } = this [SYM_CONF]
+        const data = this [SYM_DATA]    
 
-        data.vidx = (data.vidx + conf.r_lag) % data.size
-        data.cidx = (data.cidx + conf.r_lag) % data.size
+        data.vidx = (data.vidx + r_lag) % data.nums.length
+        data.cidx = (data.cidx + r_lag) % data.nums.length 
     }
     
     twist () {
-        const { value, carry } = this.coeffs       
-        if (value === 0) {
-            this.coeffs = {
-                value: carry,
-                carry: value
-            }
-        }
+        const { a_mul, b_mod, r_lag, size } = this [SYM_CONF]
+        const data = this [SYM_DATA]        
+        const temp = daa.vidx
+        
+        data.vidx = data.cidx
+        data.cidx = temp
     }
     
-    toString () {
-        const texts = []
-        const data = this [SAFE_DATA]
-
-        texts.push ('[[' + data.numbers.join (", ") + ']]')
-        texts.push ('[[' + data.carries.join (", ") + ']]')        
-        
-        return texts.join ('\n')       
-    }
 }

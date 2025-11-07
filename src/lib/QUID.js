@@ -8,9 +8,10 @@ export class QUID {
     constructor (salt_phrase = '#test-quid!') {
         Object.defineProperty (this, SAFE_MWC, {
             value: new CycloTwistMWC({
-                a_mul: 247,
-                r_lag: 4,
-                b_mod: 256
+                a_mul: 147,
+                r_lag: 3,
+                b_mod: 256,
+                size: 4
             })
         })
         
@@ -21,7 +22,7 @@ export class QUID {
         const mwc = this [SAFE_MWC] 
         
         
-        mwc.initialize (salt_phrase)
+        mwc.resalt (salt_phrase)
         
         console.log ('QUID.initialize', {  mwc })
     }
@@ -29,14 +30,19 @@ export class QUID {
     reset () {}
 
     next (is_free_test = (qtest) => true) {
+        const mwc = this [SAFE_MWC] 
         const LIMIT = 11
         let counter = 0
    
         do {
             const quid_str = this.raw_next ().toString ()
-            
+
             if (is_free_test (quid_str)) {
+                mwc.cycle ()
+            
                 return quid_str
+            } else {
+                mwc.twist ()
             }
         } while (counter++ < LIMIT)
         

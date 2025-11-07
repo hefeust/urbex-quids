@@ -67,7 +67,7 @@ export class CycloTwistMWC {
     twist () {
         const { a_mul, b_mod, r_lag, size } = this [SYM_CONF]
         const data = this [SYM_DATA]        
-        const temp = daa.vidx
+        const temp = data.vidx
         
         data.vidx = data.cidx
         data.cidx = temp

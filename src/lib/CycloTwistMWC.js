@@ -50,7 +50,9 @@ export class CycloTwistMWC {
         data.nums [data.cidx] = div
 
         for (let off = 0; off < size; off++) {
-            output [off] = data.nums [off]
+            const idx = (data.vidx + off * data.cidx) % data.nums.length
+        
+            output [off] = data.nums [idx]
         }
         
         return output

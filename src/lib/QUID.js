@@ -6,25 +6,18 @@ const SAFE_MWC = Symbol.for ('safe-mwc')
 export class QUID {
 
     constructor (salt_phrase = '#test-quid!') {
-        Object.defineProperty (this, SAFE_MWC, {
-            value: new CycloTwistMWC({
+        const mwc = new CycloTwistMWC({
                 a_mul: 147,
                 r_lag: 3,
                 b_mod: 256,
                 size: 4
             })
+    
+        Object.defineProperty (this, SAFE_MWC, {
+            value: mwc
         })
         
-        this.initialize (salt_phrase)
-    }
-
-    initialize (salt_phrase) {
-        const mwc = this [SAFE_MWC] 
-        
-        
         mwc.resalt (salt_phrase)
-        
-        console.log ('QUID.initialize', {  mwc })
     }
     
     reset () {}

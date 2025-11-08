@@ -15,7 +15,7 @@ export class CycloTwistMWC {
             nums: Array (2 * (2 * size) + r_lag).fill (Math.floor (b_mod / 2))
         }
         
-        this.resalt ('#test!')
+//        this.resalt ('#test!')
     }
     
     resalt (salt_phrase) {

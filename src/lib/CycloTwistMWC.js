@@ -11,8 +11,8 @@ export class CycloTwistMWC {
         
         this [SYM_DATA] = {
             cidx: 0,
-            vidx: r_lag,
-            nums: Array (1 + 2 * (size + r_lag)).fill (Math.floor (b_mod / 2))
+            vidx: 2 * r_lag,
+            nums: Array (1 + 4 * (size + r_lag)).fill (Math.floor (b_mod / 2))
         }
         
 //        this.resalt ('#test!')
@@ -25,8 +25,8 @@ export class CycloTwistMWC {
         for (let off = 0; off < salt_phrase.length; off++) {
             const k = salt_phrase.charCodeAt (off)
 
-            data.nums [data.cidx + off] = k
-            data.nums [data.vidx + off] = b_mod - k
+            data.nums [data.cidx] = k
+            data.nums [data.vidx] = b_mod - k
             
             this.cycle ()
         }

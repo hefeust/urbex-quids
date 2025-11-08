@@ -25,8 +25,8 @@ export class CycloTwistMWC {
         for (let i = 0; i < salt_phrase.length; i++) {
             const k = salt_phrase.charCodeAt (i)
 
-            data [data.cidx] = k
-            data [data.vidx] = b_mod - k
+            data.nums [data.cidx] = k
+            data.nums [data.vidx] = b_mod - k
             
             this.cycle ()
         }
@@ -50,9 +50,9 @@ export class CycloTwistMWC {
         data.nums [data.cidx] = div
 
         for (let off = 0; off < size; off++) {
-            const idx = (data.vidx + off * data.cidx) % data.nums.length
+            const nidx = (data.vidx + off) * r_lag + data.cidx
         
-            output [off] = data.nums [idx]
+            output [off] = data.nums [nidx % data.nums.length]
         }
         
         return output

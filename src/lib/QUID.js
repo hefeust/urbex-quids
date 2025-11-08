@@ -8,7 +8,7 @@ export class QUID {
     constructor (salt_phrase = '#test-quid!') {
         const mwc = new CycloTwistMWC({
                 a_mul: 147,
-                r_lag: 3,
+                r_lag: 7,
                 b_mod: 256,
                 size: 4
             })
@@ -19,8 +19,6 @@ export class QUID {
         
         mwc.resalt (salt_phrase)
     }
-    
-    reset () {}
 
     next (is_free_test = (qtest) => true) {
         const mwc = this [SAFE_MWC] 
@@ -31,8 +29,6 @@ export class QUID {
             const quid_str = this.raw_next ().toString ()
 
             if (is_free_test (quid_str)) {
-                mwc.cycle ()
-            
                 return quid_str
             } else {
                 mwc.twist ()

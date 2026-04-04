@@ -1,0 +1,308 @@
+
+
+const MAX = 1000 * 1000 * 1
+
+const MAX_QUID_LOOPS = 21
+
+const GMWC_DEFAULTS = {
+    a_multiplier: 249, // prime number
+    b_modulus: 256, // 1 byte
+    r_lag: 11, // prime number
+    hex_size: 4 // key of 2*4=8 hexadigits length
+}
+
+// safety prop names protection
+const SYM_CONF = Symbol ('conf')
+const SYM_STATE = Symbol ('state')
+const SYM_VALUES = Symbol ('values')
+const SYM_METRICS = Symbol ('metrics')
+
+// GENERATOR with Multply-!With-Carry algorithm
+export class GMWC {
+
+    constructor (options = GMWC_DEFAULTS) {
+        const conf = Object.assign ({}, GMWC_DEFAULTS, options)
+        
+        this [SYM_CONF] = conf
+        this [SYM_STATE] = { nlen: -1, cidx: 0, ridx: 0 }
+        this [SYM_VALUES] = []
+        this [SYM_METRICS] = { cycles: 0, twists: 0 }
+
+        this.reset ()
+    }
+    
+    reset () {
+        const conf = this [SYM_CONF]
+        const state = this [SYM_STATE]
+        const values = this [SYM_VALUES]
+    
+        const seed = conf.b_modulus - 1   
+        const nlen = 2 * conf.r_lag - 1
+
+        this [SYM_VALUES] = new Array (nlen).fill (0)
+            .map ((xi, xidx) => (xidx * conf.a_multiplier) % conf.b_modulus)
+
+        this [SYM_STATE] = {
+            nlen,  vidx: 0, cidx: 1 + conf.r_lag, 
+        }
+    }
+    
+    // compute next values
+    compute () {
+        const conf = this [SYM_CONF]
+        const state = this [SYM_STATE]
+        const values = this [SYM_VALUES]
+    
+        const vidx0 = state.vidx
+        const cidx0 = state.cidx
+        const vidx1 = (state.vidx + 1) % state.nlen
+        const cidx1 = (state.cidx + 1) % state.nlen
+
+        const vi = values [vidx0]
+        const ci = values [cidx0]
+            
+        const lin = vi * conf.a_multiplier + ci
+        const mod = lin % conf.b_modulus               
+        const sub = lin - mod
+        const div = sub / conf.b_modulus
+            
+        values [vidx1] = div
+        values [cidx1] = mod      
+    }
+    
+    // cycle arrays
+    cycle () {
+        const state = this [SYM_STATE]
+        const metrics = this [SYM_METRICS]
+        
+        const vidx = state.vidx - 1
+        const cidx = state.cidx - 1
+        
+        if (vidx < 0) {
+            state.vidx = state.nlen - 1
+        } else {
+            state.vidx = vidx
+        }
+
+        if (cidx < 0) {
+            state.cidx = state.nlen - 1
+        } else {
+            state.cidx = cidx
+        }
+        
+        metrics.cycles++
+    }
+    
+    // rwist call by user when collision dected
+    twist ()     {
+        const state = this [SYM_STATE]
+        const metrics = this [SYM_METRICS]
+        
+        const temp = state.vidx
+
+        // swap carries and values pointer refrences        
+        state.vidx = state.cidx
+        state.cidx = temp
+
+        metrics.twists++
+    }
+
+    get values () {
+        const conf = this [SYM_CONF]
+        const state = this [SYM_STATE]
+        const values = this [SYM_VALUES]
+
+        const results = []
+    
+        for (let offset = 0; offset < conf.hex_size; offset++) {
+            const vidx = (state.vidx + offset) % state.nlen
+
+            results.push (values.at (vidx))
+        }
+
+//        console.log (this.numbers)
+        return results    
+    }
+    
+    get metrics () {
+        const metrics = this [SYM_METRICS]    
+        
+        return Object.assign (metrics)
+    }
+}
+
+
+export class GQUID {
+
+    constructor (gmwc_options = GMWC_DEFAULTS) {
+        this [SYM_STATE] = {
+            gmwc: new GMWC (gmwc_options)   
+        }
+    }
+    
+    init (salt = '#super-test-salt-phrase!') {
+        const state = this [SYM_STATE]
+        
+        state.gmwc.reset ()
+        
+//          console.log (state)
+
+        for (let i = 0; i < salt.length; i++) {
+            for (let n= 0; n < salt.charCodeAt (i); n++) {
+                state.gmwc.compute ()
+                state.gmwc.cycle ()
+            }
+            
+            state.gmwc.twist ()
+        }        
+    }
+
+    next (test_is_free = (qnew) => true) {
+        const state = this [SYM_STATE]
+        
+        let quid = null
+        let count = 0
+    
+        do {
+            state.gmwc.compute ()
+            state.gmwc.cycle ()
+            quid = this.as_quid (state.gmwc.values)
+            
+//            console.log (count + ': ' + quid)
+            
+            if (test_is_free (quid)) {
+                return quid
+            } else {
+                state.gmwc.twist ()
+            }
+        } while (count++ < MAX_QUID_LOOPS)
+        
+//        console.log (state.gmwc.metrics )
+        
+        throw new Error ('#QUID!')
+    }  
+
+
+    as_quid (values = []) {
+        let quid = ''
+        
+        for (const val of values) {
+            let str = val.toString (16)
+
+            if (str.length === 1) {
+                quid += '0' + str
+            } else {
+                quid +=  str            
+            }
+        }
+
+        return quid     
+    }
+    
+    get stats () {
+        const state = this [SYM_STATE]
+        
+        return state.gmwc.metrics
+    }
+}
+
+function report (param, { nloops, success, cycles, twists }) {
+    const texts = []
+    const percent = (x) => x.toFixed (3) + "% "
+    
+    return [
+        'PARAM: ' + param,
+        'overcost: ' + percent (100 * (cycles - nloops) / nloops),
+        'crashes: ' + percent ( 100 * twists / nloops),
+        success ? 'ok' : 'KO'
+    ].join (' ')
+}
+
+//
+console.log ('quid-tests')
+
+function test (nloops, setup = {}) {
+    const gquid = new GQUID (setup)
+    let success = true
+
+    try {
+        const lookups = new Map ()
+        
+        gquid.init (Date.now ().toString (16))
+
+        for (let i = 0; i < MAX; i++) {
+            const quid = gquid.next ((qnew) => {
+                return false === lookups.has (qnew)
+            })
+            
+            const score = lookups.get (quid) || 0
+
+            lookups.set (quid, 1 + score)
+        }
+    } catch (err) {
+//        console.log (err)
+    
+        success = false
+    }
+
+    console.log (
+        report (setup.a_multiplier, {  
+            nloops,
+            success,
+            cycles: gquid.stats.cycles,
+            twists: gquid.stats.twists        
+        })
+    )
+}
+
+function all_tests () {
+
+    for (let mult = 3; mult < 256; mult+= 1) {
+//        console.log ('TEST', { mult })
+    
+        test (MAX, {
+            a_multiplier: mult
+        })
+    }
+}
+
+function simple_test () {
+    const gquid = new GQUID ()
+    const lookups = new Map ()
+
+    let list = []
+    let str = ''
+
+    gquid.init ()
+
+    for (let i = 0; i < MAX; i++) {
+        const quid = gquid.next ((qnew) => {
+            return false === lookups.has (qnew)
+        })
+        
+        const score = lookups.get (quid) || 0
+        
+        lookups.set (quid, 1 + score)
+    //    str += '  ' + quid
+        list.push (quid)
+
+        if ((i % 10) === 0) {
+            console.log (list.join ('  '))
+            list.splice (0)
+        }
+
+        if ((i % 1000) === 0) {
+            console.log (str)
+        
+            console.log (String(i).padStart (10, ' ') + ': ' + JSON.stringify (gquid.stats))
+            str = ''
+        }
+    }
+
+    console.log (str)
+
+    console.log (gquid.stats )
+}
+
+// simple_test ()
+all_tests ()
